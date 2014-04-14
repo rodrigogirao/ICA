@@ -1,3 +1,12 @@
 /Servers
 .metadata
 /RemoteSystemsTempFiles
+/build
+/bin
+/.metadata
+/WebContent/WEB-INF/classes
+*.war
+build.properties
+/bin
+/gen
+local.properties
