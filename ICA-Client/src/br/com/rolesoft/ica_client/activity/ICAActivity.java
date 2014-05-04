@@ -1,4 +1,4 @@
-package br.com.rolesoft.ica_client;
+package br.com.rolesoft.ica_client.activity;
 
 import br.com.rolesoft.ica_client.model.DeviceSpecifications;
 import android.app.Activity;
