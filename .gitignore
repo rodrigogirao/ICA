@@ -3,10 +3,12 @@
 /RemoteSystemsTempFiles
 /build
 /bin
+/ICA-Client/bin
+/ICA-Client-Sample/bin
+/ICA-Client/gen
+/ICA-Client-Sample/gen
 /.metadata
 /WebContent/WEB-INF/classes
 *.war
 build.properties
-/bin
-/gen
 local.properties
