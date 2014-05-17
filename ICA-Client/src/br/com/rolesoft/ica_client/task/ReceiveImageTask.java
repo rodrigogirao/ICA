@@ -15,6 +15,8 @@ import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
+import com.google.gson.Gson;
+
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,23 +25,22 @@ import android.widget.ImageView;
 import br.com.rolesoft.ica_client.config.DeviceConfig;
 import br.com.rolesoft.ica_client.model.DeviceSpecifications;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 public class ReceiveImageTask extends AsyncTask<Void, Void, Bitmap> {
 	
 	private ImageView taskView;
 	private Activity activity;
-
+	private String url;
 	
-	public ReceiveImageTask(ImageView taskView, Activity activity) {
+	public ReceiveImageTask(ImageView taskView, Activity activity, String url) {
 		this.taskView = taskView;
 		this.activity = activity;
+		this.url = url;
 	}
 	@Override
 	protected Bitmap doInBackground(Void... arg0) {
 		Bitmap bmp=null;
-		Gson gson = new GsonBuilder().create();
+		Gson gson = new Gson();
 		DeviceSpecifications device = new DeviceSpecifications();
 		DeviceConfig.configureDeviceSpecifications(device, activity);
 		String jsonDevice = gson.toJson(device);
@@ -47,7 +48,7 @@ public class ReceiveImageTask extends AsyncTask<Void, Void, Bitmap> {
 		HttpClient httpclient = new DefaultHttpClient();
 		httpclient.getParams().setParameter(
 				CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-		HttpPost httppost = new HttpPost("http://localhost:8080/ICA-Server/image");
+		HttpPost httppost = new HttpPost(url);
 
 		try {
 			StringEntity entity = new StringEntity(jsonDevice, "UTF-8");
@@ -56,9 +57,12 @@ public class ReceiveImageTask extends AsyncTask<Void, Void, Bitmap> {
 					"application/json;charset=UTF-8"));
 			httppost.setEntity(entity);
 			HttpResponse response = httpclient.execute(httppost);
+			System.out.println("Entity response: " + response.getEntity().getContentLength() );
 			String jsonResponse = EntityUtils.toString(response.getEntity());
-			System.out.println(jsonResponse);
-			byte[] bytesImage = gson.fromJson(jsonResponse, byte[].class);
+			System.out.println("Json response: " + jsonResponse );
+			if (jsonResponse != null) {
+				byte[] bytesImage = gson.fromJson(jsonResponse, byte[].class);
+			
 			//Decode image size
 			//BitmapFactory.Options o = new BitmapFactory.Options();
 			//o.inJustDecodeBounds = true;
@@ -69,6 +73,7 @@ public class ReceiveImageTask extends AsyncTask<Void, Void, Bitmap> {
 			opt.inPurgeable = true;
 			
 			bmp = BitmapFactory.decodeByteArray(bytesImage, 0, bytesImage.length,opt);
+			}
 
 			httpclient.getConnectionManager().shutdown();
 
@@ -85,6 +90,9 @@ public class ReceiveImageTask extends AsyncTask<Void, Void, Bitmap> {
 	protected void onPostExecute(Bitmap bmp) {
 		System.out.println("ON POST EXECUTE");
 		System.out.println(bmp);
-		taskView.setImageBitmap(bmp);
+		if(bmp != null)
+			taskView.setImageBitmap(bmp);
+		else
+			System.out.println("BMP NULL");
 	}
 }
