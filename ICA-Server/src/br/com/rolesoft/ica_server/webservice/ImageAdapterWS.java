@@ -28,10 +28,11 @@ public class ImageAdapterWS {
 	int width;
 	int height;
 	
-	@POST	@Path("/{numOfImages}")
+	@POST	@Path("/{numOfImages}/imagesIds/{imagesIds}")
 	@Consumes("application/json")
 	@Produces("application/json")
-	public String getImage(String json, @PathParam("numOfImages") int numOfImages){
+	public String getImage(String json, @PathParam("numOfImages") int numOfImages, 
+			@PathParam("imagesIds") String imagesIds){
 		System.out.println("entrou no service");
 		ArrayList<byte[]> imagesList = new ArrayList<byte[]>();
 		Gson gson =  new GsonBuilder().create();
@@ -46,10 +47,12 @@ public class ImageAdapterWS {
 			width=width/2;
 			height=height/2;
 		}
+		
+		String[] images = imagesIds.split(",");
 
 		try {
 			for (int i = 0; i < numOfImages; i++) {
-				File file = new File("/home/rodrigo/workspace/web/ImageCloudAdapterServer-Prototype/WebContent/images/once_upon_a_time_by_daekazu-d5fsvt4.jpg");
+				File file = new File("/home/rodrigo/workspace/web/ImageCloudAdapterServer-Prototype/WebContent/images/" + images[i]);
 				Image img = ImageIO.read(file);
 				BufferedImage image;
 				image = ImageIO.read(file);

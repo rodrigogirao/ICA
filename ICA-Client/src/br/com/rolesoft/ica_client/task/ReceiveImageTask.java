@@ -35,17 +35,20 @@ public class ReceiveImageTask extends AsyncTask<Void, Void, ArrayList<Bitmap>> {
 	private Activity activity;
 	private String url;
 	private int numOfImages;
+	private String[] imagesIds;
 	
-	public ReceiveImageTask(ViewGroup taskView, Activity activity, String url) {
+	public ReceiveImageTask(ViewGroup taskView, Activity activity, String url, String[] imagesIds) {
 		this.taskView = taskView;
 		this.activity = activity;
 		this.url = url;
 		this.numOfImages = 1;
+		this.imagesIds = imagesIds;
 	}
-	public ReceiveImageTask(ViewGroup taskView, Activity activity, String url, int numOfImages) {
+	public ReceiveImageTask(ViewGroup taskView, Activity activity, String url, String[] imagesIds, int numOfImages) {
 		this.taskView = taskView;
 		this.activity = activity;
 		this.url = url;
+		this.imagesIds = imagesIds;
 		if (numOfImages > 1) {
 			this.numOfImages = numOfImages;
 		} else {
@@ -57,6 +60,14 @@ public class ReceiveImageTask extends AsyncTask<Void, Void, ArrayList<Bitmap>> {
 	protected ArrayList<Bitmap> doInBackground(Void... arg0) {
 		ArrayList<Bitmap> bmpList = null;
 		Gson gson = new Gson();
+		String imagesIds = "";
+		for (int i = 0; i < numOfImages; i++) {
+			imagesIds += this.imagesIds[i];
+			if (i != numOfImages - 1) {
+				imagesIds += ",";
+			}
+		}
+		
 		DeviceSpecifications device = new DeviceSpecifications();
 		DeviceConfig.configureDeviceSpecifications(device, activity);
 		String jsonDevice = gson.toJson(device);
@@ -64,8 +75,8 @@ public class ReceiveImageTask extends AsyncTask<Void, Void, ArrayList<Bitmap>> {
 		HttpClient httpclient = new DefaultHttpClient();
 		httpclient.getParams().setParameter(
 				CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-		HttpPost httppost = new HttpPost(url);
-
+		HttpPost httppost = new HttpPost(url + numOfImages + "/imagesIds/" + imagesIds);
+		
 		try {
 			StringEntity entity = new StringEntity(jsonDevice, "UTF-8");
 			entity.setContentType("application/json;charset=UTF-8");
