@@ -2,6 +2,7 @@ package br.com.rolesoft.ica_client.task;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -15,31 +16,46 @@ import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
-import com.google.gson.Gson;
-
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import br.com.rolesoft.ica_client.config.DeviceConfig;
 import br.com.rolesoft.ica_client.model.DeviceSpecifications;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
-public class ReceiveImageTask extends AsyncTask<Void, Void, Bitmap> {
+
+public class ReceiveImageTask extends AsyncTask<Void, Void, ArrayList<Bitmap>> {
 	
-	private ImageView taskView;
+	private ViewGroup taskView;
 	private Activity activity;
 	private String url;
+	private int numOfImages;
 	
-	public ReceiveImageTask(ImageView taskView, Activity activity, String url) {
+	public ReceiveImageTask(ViewGroup taskView, Activity activity, String url) {
 		this.taskView = taskView;
 		this.activity = activity;
 		this.url = url;
+		this.numOfImages = 1;
 	}
+	public ReceiveImageTask(ViewGroup taskView, Activity activity, String url, int numOfImages) {
+		this.taskView = taskView;
+		this.activity = activity;
+		this.url = url;
+		if (numOfImages > 1) {
+			this.numOfImages = numOfImages;
+		} else {
+			this.numOfImages = 1;
+		}
+	}
+	
 	@Override
-	protected Bitmap doInBackground(Void... arg0) {
-		Bitmap bmp=null;
+	protected ArrayList<Bitmap> doInBackground(Void... arg0) {
+		ArrayList<Bitmap> bmpList = null;
 		Gson gson = new Gson();
 		DeviceSpecifications device = new DeviceSpecifications();
 		DeviceConfig.configureDeviceSpecifications(device, activity);
@@ -61,18 +77,20 @@ public class ReceiveImageTask extends AsyncTask<Void, Void, Bitmap> {
 			String jsonResponse = EntityUtils.toString(response.getEntity());
 			System.out.println("Json response: " + jsonResponse );
 			if (jsonResponse != null) {
-				byte[] bytesImage = gson.fromJson(jsonResponse, byte[].class);
-			
-			//Decode image size
-			//BitmapFactory.Options o = new BitmapFactory.Options();
-			//o.inJustDecodeBounds = true;
-			//o.inSampleSize = 100;
-			BitmapFactory.Options opt = new BitmapFactory.Options();
-			opt.inDither = false;
-			opt.inScaled = false;
-			opt.inPurgeable = true;
-			
-			bmp = BitmapFactory.decodeByteArray(bytesImage, 0, bytesImage.length,opt);
+				ArrayList<byte[]> imagesArray = gson.fromJson(jsonResponse, new TypeToken<ArrayList<byte[]>>(){}.getType());
+				bmpList = new ArrayList<Bitmap>();
+				//Decode image size
+				for (int i = 0; i < numOfImages; i++) {
+					byte[] bytesImage = imagesArray.get(i);
+					
+					BitmapFactory.Options opt = new BitmapFactory.Options();
+					opt.inDither = false;
+					opt.inScaled = false;
+					opt.inPurgeable = true;
+				
+					Bitmap bmp = BitmapFactory.decodeByteArray(bytesImage, 0, bytesImage.length,opt);
+					bmpList.add(bmp);
+				}
 			}
 
 			httpclient.getConnectionManager().shutdown();
@@ -84,14 +102,19 @@ public class ReceiveImageTask extends AsyncTask<Void, Void, Bitmap> {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return bmp;
+		return bmpList;
 	}
 	@Override
-	protected void onPostExecute(Bitmap bmp) {
+	protected void onPostExecute(ArrayList<Bitmap> bmpList) {
 		System.out.println("ON POST EXECUTE");
-		System.out.println(bmp);
-		if(bmp != null)
-			taskView.setImageBitmap(bmp);
+		System.out.println(bmpList);
+		if(bmpList != null) {
+			for (Bitmap bitmap : bmpList) {
+				ImageView imageView = new ImageView(activity);
+				imageView.setImageBitmap(bitmap);
+				taskView.addView(imageView);
+			}
+		}
 		else
 			System.out.println("BMP NULL");
 	}

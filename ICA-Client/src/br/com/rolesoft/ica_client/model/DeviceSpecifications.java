@@ -5,7 +5,11 @@ public class DeviceSpecifications {
 	int height;
 	double screenSize;
 	long avaiableMemory;
+	private ConnectionType connectionType;
 	
+	public enum ConnectionType {
+		WIFI, DATA_CONNECTION, NO_CONNECTION
+	}
 	
 	public int getWidth() {
 		return width;
@@ -30,5 +34,11 @@ public class DeviceSpecifications {
 	}
 	public void setAvaiableMemory(long avaiableMemory) {
 		this.avaiableMemory = avaiableMemory;
+	}
+	public ConnectionType getConnectionType() {
+		return connectionType;
+	}
+	public void setConnectionType(ConnectionType connectionType) {
+		this.connectionType = connectionType;
 	}
 }
