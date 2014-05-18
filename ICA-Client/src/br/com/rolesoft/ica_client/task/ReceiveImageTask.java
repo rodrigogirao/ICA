@@ -75,7 +75,7 @@ public class ReceiveImageTask extends AsyncTask<Void, Void, ArrayList<Bitmap>> {
 		HttpClient httpclient = new DefaultHttpClient();
 		httpclient.getParams().setParameter(
 				CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-		HttpPost httppost = new HttpPost(url + numOfImages + "/imagesIds/" + imagesIds);
+		HttpPost httppost = new HttpPost(url + numOfImages + "/" + imagesIds);
 		
 		try {
 			StringEntity entity = new StringEntity(jsonDevice, "UTF-8");
