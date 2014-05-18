@@ -1,31 +1,39 @@
 package br.com.rolesoft.ica_server.webservice;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
 import br.com.rolesoft.ica_server.model.DeviceSpecifications;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
+@Path("/image")
 public class ImageAdapterWS {
 	int width;
 	int height;
 	
-	@POST
+	@POST	@Path("/{numOfImages}")
 	@Consumes("application/json")
 	@Produces("application/json")
-	public String getImage(String json){
-		byte[] adaptedImage=null;
+	public String getImage(String json, @PathParam("numOfImages") int numOfImages){
+		System.out.println("entrou no service");
+		ArrayList<byte[]> imagesList = new ArrayList<byte[]>();
 		Gson gson =  new GsonBuilder().create();
 		DeviceSpecifications ds = gson.fromJson(json, DeviceSpecifications.class);
 		width=ds.getWidth();
@@ -38,29 +46,25 @@ public class ImageAdapterWS {
 			width=width/2;
 			height=height/2;
 		}
-		
-		
-		
-		
+
 		try {
-			File file = new File("/home/rodrigo/workspace/web/ImageCloudAdapterServer-Prototype/WebContent/images/android_robot-3333px.png");
-			Image img = ImageIO.read(file);
-//			BufferedImage image;
-//			image = ImageIO.read(file);
-//			image = (BufferedImage) image.getScaledInstance(width, height, Image.SCALE_AREA_AVERAGING+Image.SCALE_SMOOTH);  
-//			BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
-//
-//		    // Draw the image on to the buffered image
-//		    Graphics2D bGr = bimage.createGraphics();
-//		    bGr.drawImage(img, 0, 0, null);
-//		    bGr.dispose();
-			
-			adaptedImage=imageToArray(img);
+			for (int i = 0; i < numOfImages; i++) {
+				File file = new File("/home/rodrigo/workspace/web/ImageCloudAdapterServer-Prototype/WebContent/images/once_upon_a_time_by_daekazu-d5fsvt4.jpg");
+				Image img = ImageIO.read(file);
+				BufferedImage image;
+				image = ImageIO.read(file);
+	//			image = (BufferedImage) image.getScaledInstance(width, height, Image.SCALE_AREA_AVERAGING+Image.SCALE_SMOOTH);  
+				BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+				
+				byte[] adaptedImage=imageToArray(img);
+				imagesList.add(adaptedImage);
+			}
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} 		
-		String jsonResponse = gson.toJson(adaptedImage);
+		String jsonResponse = gson.toJson(imagesList, new TypeToken<ArrayList<byte[]>>(){}.getType());
+//		System.out.println("Json Response: " + jsonResponse);
 		return jsonResponse;
 	}
 	
@@ -77,5 +81,11 @@ public class ImageAdapterWS {
 		        e.printStackTrace();    
 		    }    
 		    return buff.toByteArray(); 	
+	}
+	
+	@POST @Path("/test")
+	public String test(){
+		System.out.println("entrou no test service");
+		return "WORKS";
 	}
 }
