@@ -31,21 +31,21 @@ import com.google.gson.reflect.TypeToken;
 
 public class ReceiveImageTask extends AsyncTask<Void, Void, ArrayList<Bitmap>> {
 	
-	private ViewGroup taskView;
+	private ArrayList<Bitmap> adatedBitmaps;
 	private Activity activity;
 	private String url;
 	private int numOfImages;
 	private String[] imagesIds;
 	
-	public ReceiveImageTask(ViewGroup taskView, Activity activity, String url, String[] imagesIds) {
-		this.taskView = taskView;
+	public ReceiveImageTask(ArrayList<Bitmap> adatedBitmaps, Activity activity, String url, String[] imagesIds) {
+		this.adatedBitmaps = adatedBitmaps;
 		this.activity = activity;
 		this.url = url;
 		this.numOfImages = 1;
 		this.imagesIds = imagesIds;
 	}
-	public ReceiveImageTask(ViewGroup taskView, Activity activity, String url, String[] imagesIds, int numOfImages) {
-		this.taskView = taskView;
+	public ReceiveImageTask(ArrayList<Bitmap> adatedBitmaps, Activity activity, String url, String[] imagesIds, int numOfImages) {
+		this.adatedBitmaps = adatedBitmaps;
 		this.activity = activity;
 		this.url = url;
 		this.imagesIds = imagesIds;
@@ -113,20 +113,11 @@ public class ReceiveImageTask extends AsyncTask<Void, Void, ArrayList<Bitmap>> {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		adatedBitmaps = bmpList;
 		return bmpList;
 	}
 	@Override
 	protected void onPostExecute(ArrayList<Bitmap> bmpList) {
-		System.out.println("ON POST EXECUTE");
-		System.out.println(bmpList);
-		if(bmpList != null) {
-			for (Bitmap bitmap : bmpList) {
-				ImageView imageView = new ImageView(activity);
-				imageView.setImageBitmap(bitmap);
-				taskView.addView(imageView);
-			}
-		}
-		else
-			System.out.println("BMP NULL");
+		adatedBitmaps = bmpList;
 	}
 }
