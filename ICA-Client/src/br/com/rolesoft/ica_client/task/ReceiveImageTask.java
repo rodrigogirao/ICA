@@ -29,7 +29,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 
-public class ReceiveImageTask extends AsyncTask<Void, Void, ArrayList<Bitmap>> {
+public class ReceiveImageTask extends AsyncTask<Void, Void, Void> {
 	
 	private ArrayList<Bitmap> adatedBitmaps;
 	private Activity activity;
@@ -57,7 +57,7 @@ public class ReceiveImageTask extends AsyncTask<Void, Void, ArrayList<Bitmap>> {
 	}
 	
 	@Override
-	protected ArrayList<Bitmap> doInBackground(Void... arg0) {
+	protected Void doInBackground(Void... arg0) {
 		ArrayList<Bitmap> bmpList = null;
 		Gson gson = new Gson();
 		String imagesIds = "";
@@ -113,11 +113,7 @@ public class ReceiveImageTask extends AsyncTask<Void, Void, ArrayList<Bitmap>> {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		adatedBitmaps = bmpList;
-		return bmpList;
-	}
-	@Override
-	protected void onPostExecute(ArrayList<Bitmap> bmpList) {
-		adatedBitmaps = bmpList;
+		adatedBitmaps.addAll(bmpList);
+		return null;
 	}
 }
