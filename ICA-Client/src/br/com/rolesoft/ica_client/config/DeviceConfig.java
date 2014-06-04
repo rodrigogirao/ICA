@@ -1,10 +1,13 @@
 package br.com.rolesoft.ica_client.config;
 
 import br.com.rolesoft.ica_client.model.DeviceSpecifications;
+import br.com.rolesoft.ica_client.model.DeviceSpecifications.ConnectionType;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.DisplayMetrics;
 
 public class DeviceConfig {
@@ -29,5 +32,18 @@ public class DeviceConfig {
 		MemoryInfo memInfo = new ActivityManager.MemoryInfo();
 		actManager.getMemoryInfo(memInfo);
 		device.setAvaiableMemory(memInfo.availMem);
+		
+		ConnectivityManager cm = (ConnectivityManager) activity
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo info = cm.getActiveNetworkInfo();
+		if (info != null && info.isConnected()) {
+			if (info.getType() == ConnectivityManager.TYPE_WIFI) {
+				device.setConnectionType(ConnectionType.WIFI);
+			} else if (info.getType() == ConnectivityManager.TYPE_MOBILE) {
+				device.setConnectionType(ConnectionType.DATA_CONNECTION);
+			}
+		} else {
+			device.setConnectionType(ConnectionType.NO_CONNECTION);
+		}
 	}
 }

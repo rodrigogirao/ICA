@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
 import br.com.rolesoft.ica_server.model.DeviceSpecifications;
+import br.com.rolesoft.ica_server.model.DeviceSpecifications.ConnectionType;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -34,6 +35,11 @@ public class ImageAdapter {
 		if(ds.getAvaiableMemory()<52428800){//52428800==50mb
 			width=width/2;
 			height=height/2;
+		}
+		
+		if(ds.getConnectionType() == ConnectionType.DATA_CONNECTION) {
+			width = width/4;
+			height = height/4;
 		}
 		
 		String[] images = imagesIds.split(",");
