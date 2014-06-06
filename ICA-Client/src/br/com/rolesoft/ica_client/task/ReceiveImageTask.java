@@ -20,8 +20,6 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.view.ViewGroup;
-import android.widget.ImageView;
 import br.com.rolesoft.ica_client.config.DeviceConfig;
 import br.com.rolesoft.ica_client.model.DeviceSpecifications;
 

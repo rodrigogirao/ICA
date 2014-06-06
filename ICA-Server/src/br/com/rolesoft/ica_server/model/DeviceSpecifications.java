@@ -6,6 +6,7 @@ public class DeviceSpecifications {
 	double screenSize;
 	long avaiableMemory;
 	private ConnectionType connectionType;
+	private double batteryAvailablePercent;
 
 	public enum ConnectionType {
 		WIFI, DATA_CONNECTION, NO_CONNECTION
@@ -49,5 +50,13 @@ public class DeviceSpecifications {
 
 	public void setConnectionType(ConnectionType connectionType) {
 		this.connectionType = connectionType;
+	}
+
+	public double getBatteryAvailablePercent() {
+		return batteryAvailablePercent;
+	}
+
+	public void setBatteryAvaiablePercent(double batteryAvailablePercent) {
+		this.batteryAvailablePercent = batteryAvailablePercent;
 	}
 }

@@ -37,15 +37,23 @@ public class ImageAdapter {
 			height=height/2;
 		}
 		
+		System.out.println("Connection type: " + ds.getConnectionType());
 		if(ds.getConnectionType() == ConnectionType.DATA_CONNECTION) {
 			width = width/4;
 			height = height/4;
+		}
+		
+		System.out.println("Battery percent: " + ds.getBatteryAvailablePercent() + "%");
+		if(ds.getBatteryAvailablePercent() < 30) {
+			width = width/2;
+			height = height/2;
 		}
 		
 		String[] images = imagesIds.split(",");
 
 		try {
 			for (int i = 0; i < numOfImages; i++) {
+				System.out.println("CAMINHO DA IMAGEM: " + path + images[i]);
 				File file = new File(path + images[i]);
 				BufferedImage requestedImage = ImageIO.read(file);
 				int imageWidth = requestedImage.getWidth();

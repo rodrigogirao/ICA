@@ -6,8 +6,11 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.BatteryManager;
 import android.util.DisplayMetrics;
 
 public class DeviceConfig {
@@ -45,5 +48,15 @@ public class DeviceConfig {
 		} else {
 			device.setConnectionType(ConnectionType.NO_CONNECTION);
 		}
+		
+		IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+		Intent batteryStatus = activity.registerReceiver(null, ifilter);
+		int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+		int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+		double levelDouble = Integer.valueOf(level).doubleValue();
+		double scaleDouble = Integer.valueOf(scale).doubleValue();
+		double batteryPercentage = (levelDouble / scaleDouble) * 100;
+		device.setBatteryAvailablePercent(batteryPercentage);
+		
 	}
 }
